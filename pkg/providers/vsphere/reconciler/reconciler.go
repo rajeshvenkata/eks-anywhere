@@ -8,21 +8,21 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/pkg/errors"
 	apiv1 "k8s.io/api/core/v1"
+	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"k8s.io/klog/v2"
+	vspherev1 "sigs.k8s.io/cluster-api-provider-vsphere/apis/v1beta1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	ctrlClient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	anywherev1 "github.com/aws/eks-anywhere/pkg/api/v1alpha1"
 	c "github.com/aws/eks-anywhere/pkg/cluster"
+	"github.com/aws/eks-anywhere/pkg/collection"
 	"github.com/aws/eks-anywhere/pkg/config"
 	"github.com/aws/eks-anywhere/pkg/controller"
 	"github.com/aws/eks-anywhere/pkg/controller/clientutil"
 	"github.com/aws/eks-anywhere/pkg/controller/clusters"
 	"github.com/aws/eks-anywhere/pkg/controller/serverside"
 	"github.com/aws/eks-anywhere/pkg/providers/vsphere"
-	utilerrors "k8s.io/apimachinery/pkg/util/errors"
-	vspherev1 "sigs.k8s.io/cluster-api-provider-vsphere/apis/v1beta1"
-	ctrlClient "sigs.k8s.io/controller-runtime/pkg/client"
-	"github.com/aws/eks-anywhere/pkg/collection"
 )
 
 // CNIReconciler is an interface for reconciling CNI in the VSphere cluster reconciler.
@@ -192,13 +192,13 @@ func (r *Reconciler) ReconcileFailureDomains(ctx context.Context, log logr.Logge
 		})
 
 	}
-	
+
 	vSphereDeploymentZones := &vspherev1.VSphereDeploymentZoneList{}
 	if err := r.client.List(ctx, vSphereDeploymentZones,
 		ctrlClient.MatchingLabels{vsphere.VsphereDataCenterConfigNameLabel: spec.VSphereDatacenter.Name, vsphere.ClusterNameLabel: spec.Cluster.Name}); err != nil {
 		return controller.Result{}, errors.Wrap(err, "listing current Vsphere Deployment Zones")
 	}
-	
+
 	var allErrs []error
 
 	for _, m := range vSphereDeploymentZones.Items {
