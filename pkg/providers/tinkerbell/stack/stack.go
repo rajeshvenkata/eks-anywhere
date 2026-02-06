@@ -647,9 +647,6 @@ func (s *Installer) createValuesOverride(bundle releasev1alpha1.TinkerbellBundle
 			"loadBalancerIP": tinkerbellIP,
 			"lbClass":        "kube-vip.io/kube-vip-class",
 		},
-		"rbac": map[string]any{
-			"type": "Role",
-		},
 		"optional": map[string]any{
 			"hookos": map[string]any{
 				"enabled": false,
